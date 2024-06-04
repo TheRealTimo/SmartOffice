@@ -4,6 +4,6 @@
 General variables
 ________________________________________________
 */
-bool isOptOutTimerRunning = false;
+volatile bool isOptOutTimerRunning = false;
 bool isDeskOccupied = false;
 unsigned long lastMotionDetectionTime = 0;

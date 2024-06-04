@@ -10,6 +10,10 @@ float minAccelZ;
 #include "optout.h"
 #include "variables.h"
 
+void ICACHE_RAM_ATTR optOutButtonPressed() {
+  isOptOutTimerRunning = !isOptOutTimerRunning;
+}
+
 void setup(void){
   pinMode(redLedPin, OUTPUT);
   pinMode(greenLedPin, OUTPUT);
@@ -26,9 +30,7 @@ void setup(void){
 }
 
 void loop(){
-  if(optOutButtonPin == HIGH){
-    startOptOutTimer();
-  }
+  if (isOptOutTimerRunning) { startOptOutTimer(); }
   if (!mqttClient.connected()) {
     connectMqtt();
   }

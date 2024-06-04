@@ -13,18 +13,22 @@ void startOptOutTimer() {
   unsigned long startTime = millis();
   unsigned long elapsedTime = 0;
 
-  while (elapsedTime < ((OPT_OUT_BUTTON_TIMEOUT_IN_MINUTES_DEFAULT_VALUE) * 60 * 1000)) {
+  while (elapsedTime < ((OPT_OUT_BUTTON_TIMEOUT_IN_MINUTES_DEFAULT_VALUE)*60 * 1000) && isOptOutTimerRunning) {
     ESP.wdtFeed();
 
 
     if (digitalRead(optOutButtonPin) == HIGH) {
-      return;
+      while (digitalRead(optOutButtonPin) == HIGH) {
+        delay(200);
+      }
+      isOptOutTimerRunning = false;
+      break;
     }
 
     delay(100);
     elapsedTime = millis() - startTime;
   }
-
+  isOptOutTimerRunning = false;
   updateLedStatus(OPERATIONAL_PRESENCE);
   return;
 }
