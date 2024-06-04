@@ -1,7 +1,5 @@
 #include "variables.h"
 
-
-
 /*
 General variables
 ________________________________________________

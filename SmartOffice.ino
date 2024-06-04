@@ -37,21 +37,39 @@ void loop(){
 
   IMU.getAGT();
   float currentAccelZ = IMU.accZ();
-  if (currentAccelZ > (maximumAccelerationZAxiz + MOTION_THRESHOLD_) || currentAccelZ < (minimumAccelerationZAxiz - MOTION_THRESHOLD_)) {
+
+  static int positiveReadingsCount = 0;
+  static int totalReadingsCount = 0;
+
+  if (currentAccelZ > (maximumAccelerationZAxiz + MOTION_THRESHOLD) || currentAccelZ < (MINIMUM_MOTION_DETECTION_COUNT_REQUIRED - MOTION_THRESHOLD)) {
+    positiveReadingsCount++;
+  }
+
+  totalReadingsCount++;
+
+  if (positiveReadingsCount >= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED && totalReadingsCount <= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED_TIMEFRAME) {
     lastMotionDetectionTime = millis();
+
     if (!isDeskOccupied) {
       isDeskOccupied = true;
       updateLedStatus(OPERATIONAL_PRESENCE);
       turnSmartSwitchOn(true);
       publishOccupancyStatusToMqtt();
     }
-  } else {
-    if (isDeskOccupied && (millis() - lastMotionDetectionTime) > (INACTIVITY_TIMEOUT_IN_MINUTES * 60 * 1000)) {
-      isDeskOccupied = false;
-      updateLedStatus(OPERATIONAL_NO_PRESENCE);
-      turnSmartSwitchOn(false);
-      publishOccupancyStatusToMqtt();
-    }
+
+    positiveReadingsCount = 0;
+    totalReadingsCount = 0;
+  } else if (totalReadingsCount >= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED_TIMEFRAME) {
+    positiveReadingsCount = 0;
+    totalReadingsCount = 0;
   }
+
+  if (isDeskOccupied && (millis() - lastMotionDetectionTime) > (INACTIVITY_TIMEOUT_IN_MINUTES * 60 * 1000)) {
+    isDeskOccupied = false;
+    updateLedStatus(OPERATIONAL_NO_PRESENCE);
+    turnSmartSwitchOn(false);
+    publishOccupancyStatusToMqtt();
+  }
+
   delay(SAMPLE_SPEED_IN_MILLISECONDS);
 }
