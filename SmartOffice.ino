@@ -24,22 +24,34 @@ void ICACHE_RAM_ATTR optOutButtonPressed() {
   isOptOutTimerRunning = !isOptOutTimerRunning;
 }
 
-void setup(void){
+void setup() {
   pinMode(redLedPin, OUTPUT);
   pinMode(greenLedPin, OUTPUT);
   pinMode(blueLedPin, OUTPUT);
   updateLedStatus(SETUP);
 
+  Serial.begin(115200);
+  Serial.println("\nSmart Office Prototype");
+  Serial.println("Setting up as " + String(MQTT_CONTROLLER_ID));
+
   pinMode(optOutButtonPin, INPUT);
+  attachInterrupt(digitalPinToInterrupt(optOutButtonPin), optOutButtonPressed, RISING);
+
+  EEPROM.begin(EEPROM_SIZE);
+  checkSetupFlag();
+  readEeprom();
 
   connectToWifi();
   connectMqtt();
-
+  publishOccupancyStatusToMqtt();
+  publishTelemetryToMqtt();
+  publishCommandValuesToMqtt();
   setupImu();
   initializeMotionRange();
+  updateLedStatus(OPERATIONAL_NO_PRESENCE);
 }
 
-void loop(){
+void loop() {
   if (isOptOutTimerRunning) { startOptOutTimer(); }
   if (!mqttClient.connected()) {
     connectMqtt();
@@ -53,13 +65,13 @@ void loop(){
   static int positiveReadingsCount = 0;
   static int totalReadingsCount = 0;
 
-  if (currentAccelZ > (maximumAccelerationZAxiz + MOTION_THRESHOLD_DEFAULT_VALUE) || currentAccelZ < (minimumAccelerationZAxiz - MOTION_THRESHOLD_DEFAULT_VALUE)) {
+  if (currentAccelZ > (maximumAccelerationZAxiz + motionThreshold) || currentAccelZ < (minimumMotionDetectionCountRequired - motionThreshold)) {  //Motion detected
     positiveReadingsCount++;
   }
 
   totalReadingsCount++;
 
-  if (positiveReadingsCount >= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED_DEFAULT_VALUE && totalReadingsCount <= MINIMUM_MOTION_DETECTION_TIMEFRAME_IN_CYCLES_DEFAULT_VALUE) {
+  if (positiveReadingsCount >= minimumMotionDetectionCountRequired && totalReadingsCount <= minimumMotionDetectionCountTimeframe) {
     lastMotionDetectionTime = millis();
 
     if (!isDeskOccupied) {  //Only update status if a change is detected
@@ -71,17 +83,17 @@ void loop(){
 
     positiveReadingsCount = 0;
     totalReadingsCount = 0;
-  } else if (totalReadingsCount >= MINIMUM_MOTION_DETECTION_TIMEFRAME_IN_CYCLES_DEFAULT_VALUE) {
+  } else if (totalReadingsCount >= minimumMotionDetectionCountTimeframe) { //Reset variables 
     positiveReadingsCount = 0;
     totalReadingsCount = 0;
   }
 
-  if (isDeskOccupied && (millis() - lastMotionDetectionTime) > (INACTIVITY_TIMEOUT_IN_MINUTES_DEFAULT_VALUE * 60 * 1000)) {
+  if (isDeskOccupied && (millis() - lastMotionDetectionTime) > (inactivityTimeoutInMinutes * 60 * 1000)) { //Check if the inactivity requirements have been met
     isDeskOccupied = false;
     updateLedStatus(OPERATIONAL_NO_PRESENCE);
     turnSmartSwitchOn(false);
     publishOccupancyStatusToMqtt();
   }
 
-  delay(SAMPLE_SPEED_IN_MILLISECONDS_DEFAULT_VALUE);
+  delay(sampleSpeedInMilliseconds);
 }

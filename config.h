@@ -39,11 +39,16 @@ ________________________________________________
 #define MQTT_ESP_TELE_TOPIC "smartOffice/esps/tele/esp"
 #define MQTT_ESP_CMND_TOPIC "smartOffice/esps/cmnd/esp"
 
-
 #define MQTT_CONTROLLER_ID "3"
 
 #define MQTT_CONNECTION_TIMEOUT_IN_SECONDS 30
 #define MQTT_PUBLISH_ATTEMPTS 3
 #define MQTT_PUBLISH_RETRY_DELAY_IN_MILLISECONDS 500
+
+/*
+General variables
+________________________________________________
+*/
+#define EEPROM_SIZE 12
 
 #endif

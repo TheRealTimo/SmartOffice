@@ -17,17 +17,25 @@ void startOptOutTimer() {
     delay(200);
   }
 
+  if (!mqttClient.connected()) {
+    connectMqtt();
+  }
+  mqttClient.loop();
+
   //Set all values to prepare the system for the optOut
-  updateLedStatus(SYSTEM_PAUSED);
   turnSmartSwitchOn(true);
+  publishOptOutValueToMqtt();
+  updateLedStatus(SYSTEM_PAUSED);
   unsigned long startTime = millis();
   unsigned long elapsedTime = 0;
 
   //If the optOutTimeout has not been met or the timer is still running, run the loop.
   //The system will return to a operational presence state after the timeout to give it the opportunity to measure presence to avoid a shut off after the optOutTimer runs out even when someone is present
-  while (elapsedTime < ((OPT_OUT_BUTTON_TIMEOUT_IN_MINUTES_DEFAULT_VALUE - INACTIVITY_TIMEOUT_IN_MINUTES_DEFAULT_VALUE) * 60 * 1000) && isOptOutTimerRunning) {
-    ESP.wdtFeed();
-
+  while (elapsedTime < ((optOutButtonTimeoutInMinutes - inactivityTimeoutInMinutes) * 60 * 1000) && isOptOutTimerRunning) {
+    if (!mqttClient.connected()) {
+      connectMqtt();
+    }
+    mqttClient.loop();
     ESP.wdtFeed(); //Feed the ESP Watchdog to prevent a reset due to being stuck in a loop
 
     //If the button has been pressed again, exit the opt out
@@ -45,6 +53,7 @@ void startOptOutTimer() {
 
   // Return the system to a normal operational state
   isOptOutTimerRunning = false;
+  publishOptOutValueToMqtt();
   isDeskOccupied = false;
   updateLedStatus(OPERATIONAL_PRESENCE);
   lastMotionDetectionTime = millis();
