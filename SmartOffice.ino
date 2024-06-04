@@ -62,10 +62,10 @@ void loop() {
   IMU.getAGT();
   float currentAccelZ = IMU.accZ();  //Get the current acceleration on the Z axis
 
-  static int positiveReadingsCount = 0;
-  static int totalReadingsCount = 0;
+  static uint8_t positiveReadingsCount = 0;
+  static uint8_t totalReadingsCount = 0;
 
-  if (currentAccelZ > (maximumAccelerationZAxiz + motionThreshold) || currentAccelZ < (minimumMotionDetectionCountRequired - motionThreshold)) {  //Motion detected
+  if (currentAccelZ > (maximumAccelerationZAxiz + motionThreshold) || currentAccelZ < (minimumAccelerationZAxiz - motionThreshold)) {  //Motion detected
     positiveReadingsCount++;
   }
 
