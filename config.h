@@ -10,6 +10,12 @@ ________________________________________________
 #define WIFI_TIMEOUT_IN_SECONDS 30
 
 /*
+IMU related settings below
+________________________________________________
+*/
+#define IMU_CALIBRATION_TIME_IN_SECONDS 10
+
+/*
 MQTT related settings below
 ________________________________________________
 */
