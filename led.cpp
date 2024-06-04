@@ -28,6 +28,10 @@ void updateLedStatus(const LedStatus& status) {
     case OPERATIONAL_NO_PRESENCE:  //Blue
       digitalWrite(blueLedPin, HIGH);
       break;
+    case SYSTEM_PAUSED:  //Cyan
+      digitalWrite(blueLedPin, HIGH);
+      digitalWrite(greenLedPin, HIGH);
+      break;
     case OFF:
       digitalWrite(redLedPin, LOW);
       digitalWrite(greenLedPin, LOW);

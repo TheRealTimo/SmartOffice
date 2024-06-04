@@ -13,12 +13,15 @@ float minAccelZ;
 #include "led.h"
 #include "mqtt.h"
 #include "imu.h"
+#include "optout.h"
 
 void setup(void){
   pinMode(redLedPin, OUTPUT);
   pinMode(greenLedPin, OUTPUT);
   pinMode(blueLedPin, OUTPUT);
   updateLedStatus(SETUP);
+
+  pinMode(optOutButtonPin, INPUT);
 
   connectToWifi();
   connectMqtt();
@@ -28,6 +31,9 @@ void setup(void){
 }
 
 void loop(){
+  if(optOutButtonPin == HIGH){
+    startOptOutTimer();
+  }
   IMU.getAGT();
   float currentAccelZ = IMU.accZ();
 

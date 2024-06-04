@@ -24,4 +24,6 @@ ________________________________________________
 #define MQTT_USERNAME "user"
 #define MQTT_PASSWORD "password"
 
+extern int optOutButtonTimeoutInMinutes;
+
 #endif
