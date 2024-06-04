@@ -41,13 +41,13 @@ void loop(){
   static int positiveReadingsCount = 0;
   static int totalReadingsCount = 0;
 
-  if (currentAccelZ > (maximumAccelerationZAxiz + MOTION_THRESHOLD) || currentAccelZ < (MINIMUM_MOTION_DETECTION_COUNT_REQUIRED - MOTION_THRESHOLD)) {
+  if (currentAccelZ > (maximumAccelerationZAxiz + MOTION_THRESHOLD_DEFAULT_VALUE) || currentAccelZ < (minimumAccelerationZAxiz - MOTION_THRESHOLD_DEFAULT_VALUE)) {
     positiveReadingsCount++;
   }
 
   totalReadingsCount++;
 
-  if (positiveReadingsCount >= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED && totalReadingsCount <= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED_TIMEFRAME) {
+  if (positiveReadingsCount >= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED_DEFAULT_VALUE && totalReadingsCount <= MINIMUM_MOTION_DETECTION_TIMEFRAME_IN_CYCLES_DEFAULT_VALUE) {
     lastMotionDetectionTime = millis();
 
     if (!isDeskOccupied) {
@@ -59,17 +59,17 @@ void loop(){
 
     positiveReadingsCount = 0;
     totalReadingsCount = 0;
-  } else if (totalReadingsCount >= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED_TIMEFRAME) {
+  } else if (totalReadingsCount >= MINIMUM_MOTION_DETECTION_TIMEFRAME_IN_CYCLES_DEFAULT_VALUE) {
     positiveReadingsCount = 0;
     totalReadingsCount = 0;
   }
 
-  if (isDeskOccupied && (millis() - lastMotionDetectionTime) > (INACTIVITY_TIMEOUT_IN_MINUTES * 60 * 1000)) {
+  if (isDeskOccupied && (millis() - lastMotionDetectionTime) > (INACTIVITY_TIMEOUT_IN_MINUTES_DEFAULT_VALUE * 60 * 1000)) {
     isDeskOccupied = false;
     updateLedStatus(OPERATIONAL_NO_PRESENCE);
     turnSmartSwitchOn(false);
     publishOccupancyStatusToMqtt();
   }
 
-  delay(SAMPLE_SPEED_IN_MILLISECONDS);
+  delay(SAMPLE_SPEED_IN_MILLISECONDS_DEFAULT_VALUE);
 }

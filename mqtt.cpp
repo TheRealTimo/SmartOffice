@@ -38,11 +38,11 @@ void connectMqtt() {
 }
 
 void publishOccupancyStatusToMqtt() {
-  mqttClient.publish("smartOffice/esps/status/esp1/PRESENCE", isDeskOccupied ? "OCCUPIED" : "UNOCCUPIED");
+  mqttClient.publish((String(MQTT_ESP_STATUS_TOPIC) + String(MQTT_CONTROLLER_ID) + "/PRESENCE").c_str(), isDeskOccupied ? "OCCUPIED" : "UNOCCUPIED");
 }
 
 void turnSmartSwitchOn(const bool& state) {
-  mqttPublishWithRetry("smartOffice/plugs/cmnd/plug1/POWER", state ? "1" : "0");
+  mqttPublishWithRetry((String(MQTT_SWITCH_CMND_TOPIC_PREFIX) + String(MQTT_SWITCH_TOPIC_SUFFIX) + "/POWER").c_str(), state ? "1" : "0");
 }
 
 void mqttPublishWithRetry(const char* topic, const char* payload,const bool& retain){  
