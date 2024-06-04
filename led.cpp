@@ -35,3 +35,13 @@ void updateLedStatus(const LedStatus& status) {
       break;
   }
 }
+
+void ledBlinkError() {
+  while (1) {
+    updateLedStatus(ERROR);
+    delay(250);
+    updateLedStatus(OFF);
+    delay(500);
+    ESP.wdtFeed();
+  }
+}

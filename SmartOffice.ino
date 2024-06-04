@@ -10,6 +10,7 @@ const int sampleSpeedMs = 10;
 float maxAccelZ;
 float minAccelZ;
 
+#include "wifi.h"
 #include "led.h"
 
 void setup(void){
@@ -17,6 +18,8 @@ void setup(void){
   pinMode(greenLedPin, OUTPUT);
   pinMode(blueLedPin, OUTPUT);
   updateLedStatus(SETUP);
+
+  connectToWifi();
 
   Serial.begin(115200);
   while (!Serial)

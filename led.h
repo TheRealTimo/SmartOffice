@@ -17,5 +17,6 @@ extern const uint8_t greenLedPin;
 extern const uint8_t blueLedPin;
 
 void updateLedStatus(const LedStatus& status);
+void ledBlinkError();
 
 #endif
