@@ -25,6 +25,9 @@ ________________________________________________
 #define MINIMUM_MOTION_DETECTION_COUNT_REQUIRED 3
 #define MINIMUM_MOTION_DETECTION_COUNT_REQUIRED_TIMEFRAME 10
 
+#define MQTT_PUBLISH_ATTEMPTS 3
+#define MQTT_PUBLISH_RETRY_DELAY_IN_MILLISECONDS 500
+
 
 /*
 MQTT related settings below

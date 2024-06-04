@@ -17,5 +17,6 @@ void connectMqtt();
 
 void publishOccupancyStatusToMqtt();
 void turnSmartSwitchOn(const bool& state);
+void mqttPublishWithRetry(const char* topic, const char* payload, const bool& retain = false);
 
 #endif

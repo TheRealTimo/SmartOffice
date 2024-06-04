@@ -42,5 +42,15 @@ void publishOccupancyStatusToMqtt() {
 }
 
 void turnSmartSwitchOn(const bool& state) {
-  mqttClient.publish("smartOffice/plugs/cmnd/plug1/POWER", state ? "1" : "0");
+  mqttPublishWithRetry("smartOffice/plugs/cmnd/plug1/POWER", state ? "1" : "0");
+}
+
+void mqttPublishWithRetry(const char* topic, const char* payload,const bool& retain){  
+  for(int i = 0; i < MQTT_PUBLISH_ATTEMPTS; i++){
+    if(mqttClient.publish(topic, payload, retain)){
+      return;
+    }
+    delay(MQTT_PUBLISH_RETRY_DELAY_IN_MILLISECONDS);
+  }
+  ledBlinkError();
 }
