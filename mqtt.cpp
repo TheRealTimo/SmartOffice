@@ -31,3 +31,11 @@ void connectMqtt() {
     ledBlinkError();
   }
 }
+
+void publishOccupancyStatusToMqtt() {
+  mqttClient.publish("smartOffice/esps/status/esp1/PRESENCE", isDeskOccupied ? "OCCUPIED" : "UNOCCUPIED");
+}
+
+void turnSmartSwitchOn(const bool& state) {
+  mqttClient.publish("smartOffice/plugs/cmnd/plug1/POWER", state ? "1" : "0");
+}

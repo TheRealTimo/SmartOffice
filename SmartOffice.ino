@@ -42,13 +42,15 @@ void loop(){
     if (!isDeskOccupied) {
       isDeskOccupied = true;
       updateLedStatus(OPERATIONAL_PRESENCE);
-      mqttClient.publish("smartOffice/plugs/cmnd/plug1/POWER", "1");
+      turnSmartSwitchOn(true);
+      publishOccupancyStatusToMqtt();
     }
   } else {
     if (isDeskOccupied && (millis() - lastMotionDetectionTime) > (INACTIVITY_TIMEOUT_IN_MINUTES * 60 * 1000)) {
       isDeskOccupied = false;
       updateLedStatus(OPERATIONAL_NO_PRESENCE);
-      mqttClient.publish("smartOffice/plugs/cmnd/plug1/POWER", "0");
+      turnSmartSwitchOn(false);
+      publishOccupancyStatusToMqtt();
     }
   }
   delay(SAMPLE_SPEED_IN_MILLISECONDS);
