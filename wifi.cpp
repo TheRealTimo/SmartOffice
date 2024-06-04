@@ -4,13 +4,13 @@ WiFiClient espWifiClient;
 
 void connectToWifi() {
   updateLedStatus(SETUP);
-  Serial.println("Connecting to WI-Fi");
+  Serial.println("Connecting to WI-Fi: " + String(WIFI_SSID));
   WiFi.mode(WIFI_STA);
-  WiFi.begin("SmartOfficePrototype", "Password24!");
+  WiFi.begin(String(WIFI_SSID), String(WIFI_PSK));
 
   unsigned long startTime = millis();
 
-  while (WiFi.status() != WL_CONNECTED && millis() - startTime < 30 * 1000) {
+  while (WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_IN_SECONDS * 1000) {
     delay(500);
     Serial.print(".");
   }
