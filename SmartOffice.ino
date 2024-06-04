@@ -12,6 +12,7 @@ float minAccelZ;
 
 #include "wifi.h"
 #include "led.h"
+#include "mqtt.h"
 
 void setup(void){
   pinMode(redLedPin, OUTPUT);
@@ -20,6 +21,7 @@ void setup(void){
   updateLedStatus(SETUP);
 
   connectToWifi();
+  connectMqtt();
 
   Serial.begin(115200);
   while (!Serial)
