@@ -92,6 +92,22 @@ void publishTelemetryToMqtt() {
   mqttClient.publish((String(MQTT_ESP_TELE_TOPIC) + String(MQTT_CONTROLLER_ID) + "/INFO1").c_str(), telemetryJson.c_str(), true);
 }
 
+void publishVarianceCalculationStatus(){
+  String telemetryJson = "{";
+  telemetryJson += "\"varianceCalculationEnabled\":";
+  telemetryJson += IS_VARIANCE_CALCULATION_ENABLED;
+  telemetryJson += ",\"varianceCalculationSampleSize\":";
+  telemetryJson += VARIANCE_CALCULATION_SAMPLE_SIZE;
+  telemetryJson += ",\"varianceRecalibrationThreshold\":";
+  telemetryJson += VARIANCE_RECALIBARTION_THRESHOLD;
+  telemetryJson += ",\"varianceCalculationIntervalInSeconds\":";
+  telemetryJson += VARIANCE_CALCULATION_INTERVAL_IN_SECONDS;
+  telemetryJson += "\"";
+  telemetryJson += "}";
+  
+  mqttClient.publish((String(MQTT_ESP_TELE_TOPIC) + String(MQTT_CONTROLLER_ID) + "/INFO2").c_str(), telemetryJson.c_str(), true);
+}
+
 /*
  *  Function: publishCommandValuesToMqtt
  *  Description: Publishes the values the user can set manually to the command topic

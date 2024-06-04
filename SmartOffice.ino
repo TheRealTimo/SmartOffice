@@ -19,6 +19,7 @@
 #include "eeprom.h"
 #include "optout.h"
 #include "variables.h"
+#include "variance.h"
 
 void ICACHE_RAM_ATTR optOutButtonPressed() {
   isOptOutTimerRunning = !isOptOutTimerRunning;
@@ -45,6 +46,7 @@ void setup() {
   connectMqtt();
   publishOccupancyStatusToMqtt();
   publishTelemetryToMqtt();
+  publishVarianceCalculationStatus();
   publishCommandValuesToMqtt();
   setupImu();
   initializeMotionRange();
@@ -58,14 +60,13 @@ void loop() {
   }
   mqttClient.loop();
 
-
   IMU.getAGT();
-  float currentAccelZ = IMU.accZ();  //Get the current acceleration on the Z axis
+  float currentAccelZ = IMU.accZ(); //Get the current acceleration on the Z axis
 
-  static int positiveReadingsCount = 0;
-  static int totalReadingsCount = 0;
+  static uint8_t positiveReadingsCount = 0;
+  static uint8_t totalReadingsCount = 0;
 
-  if (currentAccelZ > (maximumAccelerationZAxiz + motionThreshold) || currentAccelZ < (minimumMotionDetectionCountRequired - motionThreshold)) {  //Motion detected
+  if (currentAccelZ > (maximumAccelerationZAxiz + motionThreshold) || currentAccelZ < (minimumAccelerationZAxiz - motionThreshold)) { //Motion detected
     positiveReadingsCount++;
   }
 
@@ -74,15 +75,17 @@ void loop() {
   if (positiveReadingsCount >= minimumMotionDetectionCountRequired && totalReadingsCount <= minimumMotionDetectionCountTimeframe) {
     lastMotionDetectionTime = millis();
 
-    if (!isDeskOccupied) {  //Only update status if a change is detected
+    if (!isDeskOccupied) { //Only update status if a change is detected
       isDeskOccupied = true;
       updateLedStatus(OPERATIONAL_PRESENCE);
       turnSmartSwitchOn(true);
     }
 
+    // Reset counters for the next detection cycle
     positiveReadingsCount = 0;
     totalReadingsCount = 0;
-  } else if (totalReadingsCount >= minimumMotionDetectionCountTimeframe) { //Reset variables 
+  } else if (totalReadingsCount >= minimumMotionDetectionCountTimeframe) {
+    // Reset counters if 10 readings are reached without 3 positives
     positiveReadingsCount = 0;
     totalReadingsCount = 0;
   }
@@ -91,6 +94,25 @@ void loop() {
     isDeskOccupied = false;
     updateLedStatus(OPERATIONAL_NO_PRESENCE);
     turnSmartSwitchOn(false);
+  }
+
+  if (IS_VARIANCE_CALCULATION_ENABLED) {
+    static float accelZValues[VARIANCE_CALCULATION_SAMPLE_SIZE];
+    static int sampleIndex = 0;
+    static unsigned long lastVarianceCheckTime = 0;
+
+    accelZValues[sampleIndex] = currentAccelZ;
+    sampleIndex = (sampleIndex + 1) % VARIANCE_CALCULATION_SAMPLE_SIZE;
+
+    if (millis() - lastVarianceCheckTime >= VARIANCE_CALCULATION_INTERVAL_IN_SECONDS * 1000) {
+      lastVarianceCheckTime = millis();
+
+      float variance = calculateVariance(accelZValues, VARIANCE_CALCULATION_SAMPLE_SIZE);
+      if (variance > VARIANCE_RECALIBARTION_THRESHOLD) {
+        // Recalibrate when variance exceeds the threshold
+        initializeMotionRange();
+      }
+    }
   }
 
   delay(sampleSpeedInMilliseconds);

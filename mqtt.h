@@ -16,6 +16,7 @@ void setupMqtt();
 void connectMqtt();
 void publishOccupancyStatusToMqtt();
 void publishTelemetryToMqtt();
+void publishVarianceCalculationStatus();
 void publishCommandValuesToMqtt();
 void publishOptOutValueToMqtt();
 void subscriptionCallback(char* topic, byte* payload, unsigned int length);
