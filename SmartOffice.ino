@@ -1,12 +1,22 @@
-#include "ICM42688.h"
+/*
+  Project:        Smart Office Prototype
+  Author:         Timo Hennig
+  Date Created:   24.05.2024
+  Last Modified:  24.05.2024
+  Version:        0.1
+  License:        All rights reserved
 
-float maxAccelZ;
-float minAccelZ;
+  Description:
+    This sketch uses an ICM42688 IMU connected via SPI to read acceleratuon along the z-axis in order to sense vibrations on a desk surface.
+    If vibrations are detected, occupancy status will be shared via MQTT.
+*/
 
 #include "wifi.h"
 #include "led.h"
 #include "mqtt.h"
+#include "config.h"
 #include "imu.h"
+#include "eeprom.h"
 #include "optout.h"
 #include "variables.h"
 
@@ -38,7 +48,7 @@ void loop(){
 
 
   IMU.getAGT();
-  float currentAccelZ = IMU.accZ();
+  float currentAccelZ = IMU.accZ();  //Get the current acceleration on the Z axis
 
   static int positiveReadingsCount = 0;
   static int totalReadingsCount = 0;
@@ -52,7 +62,7 @@ void loop(){
   if (positiveReadingsCount >= MINIMUM_MOTION_DETECTION_COUNT_REQUIRED_DEFAULT_VALUE && totalReadingsCount <= MINIMUM_MOTION_DETECTION_TIMEFRAME_IN_CYCLES_DEFAULT_VALUE) {
     lastMotionDetectionTime = millis();
 
-    if (!isDeskOccupied) {
+    if (!isDeskOccupied) {  //Only update status if a change is detected
       isDeskOccupied = true;
       updateLedStatus(OPERATIONAL_PRESENCE);
       turnSmartSwitchOn(true);

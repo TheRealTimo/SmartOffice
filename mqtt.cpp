@@ -1,8 +1,18 @@
+/*
+Description: Connects to MQTT and handles publishing as well a ssubscribing to topics
+*/
+
 #include "mqtt.h"
 
 PubSubClient mqttClient(espWifiClient);
 bool isMqttSetup = false;
 
+/*
+ *  Function: setupMqtt
+ *  Description: Provides the MQTT client with basic connection information for the broker
+ *  Parameters: None
+ *  Returns: None
+ */
 void setupMqtt() {
   Serial.println("Setting up MQTT");
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
@@ -10,6 +20,12 @@ void setupMqtt() {
   isMqttSetup = true;
 }
 
+/*
+ *  Function: connectMqtt
+ *  Description: Connects to the MQTT broker, sets up a last will (vaue to be set for switch in case of client disconnection) and subscribes to the command topic. Attempts connection multiple times in case of failure
+ *  Parameters: None
+ *  Returns: None
+ */
 void connectMqtt() {
   unsigned long startTime = millis();
   updateLedStatus(SETUP);
@@ -36,10 +52,22 @@ void connectMqtt() {
   }
 }
 
+/*
+ *  Function: publishOccupancyStatusToMqtt
+ *  Description: Publishes the current occupancy status to MQTT
+ *  Parameters: None
+ *  Returns: None
+ */
 void publishOccupancyStatusToMqtt() {
   mqttClient.publish((String(MQTT_ESP_STATUS_TOPIC) + String(MQTT_CONTROLLER_ID) + "/PRESENCE").c_str(), isDeskOccupied ? "OCCUPIED" : "UNOCCUPIED");
 }
 
+/*
+ *  Function: publishTelemetryToMqtt
+ *  Description: Publishes the telemetry data and variables to MQTT
+ *  Parameters: None
+ *  Returns: None
+ */
 void publishTelemetryToMqtt() {
   String telemetryJson = "{";
   telemetryJson += "\"initialisationTimeInSeconds\":";
@@ -64,6 +92,12 @@ void publishTelemetryToMqtt() {
   mqttClient.publish((String(MQTT_ESP_TELE_TOPIC) + String(MQTT_CONTROLLER_ID) + "/INFO1").c_str(), telemetryJson.c_str(), true);
 }
 
+/*
+ *  Function: publishCommandValuesToMqtt
+ *  Description: Publishes the values the user can set manually to the command topic
+ *  Parameters: None
+ *  Returns: None
+ */
 void publishCommandValuesToMqtt() {
   String baseTopic = String(MQTT_ESP_CMND_TOPIC) + String(MQTT_CONTROLLER_ID);
 
@@ -76,10 +110,22 @@ void publishCommandValuesToMqtt() {
   mqttClient.publish((baseTopic + "/MIMIMUM_DETECTION_COUNT_TIMEFRAME").c_str(), String(minimumMotionDetectionCountTimeframe).c_str(), true);
 }
 
+/*
+ *  Function: publishOptOutValueToMqtt
+ *  Description: Publishes the current optOutTimer status to MQTT
+ *  Parameters: None
+ *  Returns: None
+ */
 void publishOptOutValueToMqtt() {
   mqttClient.publish((String(MQTT_ESP_CMND_TOPIC) + String(MQTT_CONTROLLER_ID) + "/OPTOUT").c_str(), isOptOutTimerRunning ? "TRUE" : "FALSE");
 }
 
+/*
+ *  Function: publishOptOutValueToMqtt
+ *  Description: Handles callbacks from MQTT subscriptions. Identifies the target topic and redirects
+ *  Parameters: char, byte, unsigned int - provided by the MQTT callback by default
+ *  Returns: None
+ */
 void subscriptionCallback(char* topic, byte* payload, unsigned int length) {
   String expectedTopicPrefix = String(MQTT_ESP_CMND_TOPIC) + String(MQTT_CONTROLLER_ID);
   String topicStr = String(topic);
@@ -114,10 +160,22 @@ void subscriptionCallback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
+/*
+ *  Function: turnSmartSwitchOn
+ *  Description: Sends a message to MQTT to enable or disable power for the workstation through the smart power plug
+ *  Parameters: bool - desired status of the MQTT enabled smart power plug
+ *  Returns: None
+ */
 void turnSmartSwitchOn(const bool& state) {
   mqttPublishWithRetry((String(MQTT_SWITCH_CMND_TOPIC_PREFIX) + String(MQTT_SWITCH_TOPIC_SUFFIX) + "/POWER").c_str(), state ? "1" : "0");
 }
 
+/*
+ *  Function: mqttPublishWithRetry
+ *  Description: Publishes a message that is critical for system functionality multiple times if it fails
+ *  Parameters: bool - desired status of the MQTT enabled smart power plug
+ *  Returns: None
+ */
 void mqttPublishWithRetry(const char* topic, const char* payload,const bool& retain){  
   for(int i = 0; i < MQTT_PUBLISH_ATTEMPTS; i++){
     if(mqttClient.publish(topic, payload, retain)){

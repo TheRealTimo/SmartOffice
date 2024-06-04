@@ -1,7 +1,17 @@
+/*
+Description: Handles WIFI connection 
+*/
+
 #include "wifi.h"
 
 WiFiClient espWifiClient;
 
+/*
+ *  Function: connectToWifi
+ *  Description: Connects the ESP to WIFI based on the configs in "config.h". Attempts multiple times on failed connection within a given timeframe
+ *  Parameters: None
+ *  Returns: None
+ */
 void connectToWifi() {
   updateLedStatus(SETUP);
   Serial.println("Connecting to WI-Fi: " + String(WIFI_SSID));

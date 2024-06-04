@@ -1,3 +1,7 @@
+/*
+Description: Initialises the IMU and takes baseline readings for the dynamic range
+*/
+
 #include "imu.h"
 
 ICM42688 IMU(SPI, 15);  //Chip select/Slave select(CS/SS) on pin 15
@@ -5,6 +9,12 @@ ICM42688 IMU(SPI, 15);  //Chip select/Slave select(CS/SS) on pin 15
 float minimumAccelerationZAxiz;
 float maximumAccelerationZAxiz;
 
+/*
+ *  Function: setupImu
+ *  Description: Connects the ESP to the IMU via SPI. Attempts multiple connections in case of failure. 
+ *  Parameters: None
+ *  Returns: None
+ */
 void setupImu() {
   updateLedStatus(SETUP);
   int status;
@@ -32,6 +42,12 @@ void setupImu() {
   }
 }
 
+/*
+ *  Function: initializeMotionRange
+ *  Description: Reads the acceleration values along the Z-axis for a define dtime whilst finding the minimum and maximum values to calibrate the dynamic range
+ *  Parameters: None
+ *  Returns: None
+ */
 void initializeMotionRange() {
   Serial.println("Calibrating");
   Serial.println("Please stand back");

@@ -1,5 +1,15 @@
+/*
+Description: A collection of functiions to validate Strings
+*/
+
 #include "utils.h"
 
+/*
+ *  Function: isStringValidBoolean
+ *  Description: Checks of a string holds a value that can be converted to a boolean
+ *  Parameters: String - String to be checked for being a valid boolean
+ *  Returns: bool - true if the provided string can be converted to a boolean
+ */
 bool isStringValidBoolean(const String& inputValue) {
   if (inputValue.equalsIgnoreCase("true") || inputValue.equalsIgnoreCase("false") || inputValue.equalsIgnoreCase("on") || inputValue.equalsIgnoreCase("off") || inputValue == "1" || inputValue == "0") {
     return true;
@@ -8,6 +18,12 @@ bool isStringValidBoolean(const String& inputValue) {
   }
 }
 
+/*
+ *  Function: isStringValidFloat
+ *  Description: Checks of a string holds a value that can be converted to a float
+ *  Parameters: String - String to be checked for being a valid Float
+ *  Returns: bool - true if the provided string can be converted to a Float
+ */
 bool isStringValidFloat(const String& inputValue) {
   float value;
   int numConversions = sscanf(inputValue.c_str(), "%f", &value);
@@ -22,6 +38,12 @@ bool isStringValidFloat(const String& inputValue) {
   return true;
 }
 
+/*
+ *  Function: isStringValidUint8
+ *  Description: Checks of a string holds a value that can be converted to a uint8_t
+ *  Parameters: String - String to be checked for being a valid uint8_t
+ *  Returns: bool - true if the provided string can be converted to a uint8_t
+ */
 bool isStringValidUint8(const String& inputValue) {
   // Check if the string contains only digits
   for (size_t i = 0; i < inputValue.length(); ++i) {
@@ -37,7 +59,12 @@ bool isStringValidUint8(const String& inputValue) {
   return (value >= 0 && value <= UINT8_MAX);
 }
 
-
+/*
+ *  Function: isStringValidUint16
+ *  Description: Checks of a string holds a value that can be converted to a uint16_t
+ *  Parameters: String - String to be checked for being a valid uint16_t
+ *  Returns: bool - true if the provided string can be converted to a uint16_t
+ */
 bool isStringValidUint16(const String& inputValue) {
   // Check if the string contains only digits
   for (size_t i = 0; i < inputValue.length(); ++i) {
@@ -53,7 +80,12 @@ bool isStringValidUint16(const String& inputValue) {
   return (value >= 0 && value <= UINT16_MAX);
 }
 
-
+/*
+ *  Function: convertStringToBool
+ *  Description: Converts a String with given values to a boolean
+ *  Parameters: String - String to be converted to a boolean
+ *  Returns: bool - true if the provided string represents a true boolean
+ */
 bool convertStringToBool(const String& str) {
   return (str.equalsIgnoreCase("true") || str.equalsIgnoreCase("on") || str == "1");
 }

@@ -1,9 +1,19 @@
+/*
+Description: Controls the status of the RGB LED
+*/
+
 #include "led.h"
 
 const uint8_t redLedPin = 4;
 const uint8_t greenLedPin = 0;
 const uint8_t blueLedPin = 2;
 
+/*
+ *  Function: updateLedStatus
+ *  Description: Switches the LED color to represent a certain state defined in LedStatus ENUM
+ *  Parameters: LedStatus - ENUM of the status the LED is supposed to represent
+ *  Returns: None
+ */
 void updateLedStatus(const LedStatus& status) {
   digitalWrite(redLedPin, LOW);
   digitalWrite(greenLedPin, LOW);
@@ -40,6 +50,12 @@ void updateLedStatus(const LedStatus& status) {
   }
 }
 
+/*
+ *  Function: ledBlinkError
+ *  Description: Blinks the RGB LED on ERROR(red) indefinetly to indicate system failure
+ *  Parameters: None
+ *  Returns: None
+ */
 void ledBlinkError() {
   while (1) {
     updateLedStatus(ERROR);
