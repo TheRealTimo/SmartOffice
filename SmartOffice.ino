@@ -7,13 +7,17 @@ const float motionThreshold = 0.0005; //The threshold at which motion is detecte
 const int initialisationTimeInSeconds = 10;
 const int sampleSpeedMs = 10;
 
-
 float maxAccelZ;
 float minAccelZ;
 
-int detectionCounter = 0;
+#include "led.h"
 
 void setup(void){
+  pinMode(redLedPin, OUTPUT);
+  pinMode(greenLedPin, OUTPUT);
+  pinMode(blueLedPin, OUTPUT);
+  updateLedStatus(SETUP);
+
   Serial.begin(115200);
   while (!Serial)
     delay(10); 
@@ -27,50 +31,25 @@ void setup(void){
     Serial.println(status);
     while(1) {}
   }
-
   initializeMotionRange();
 }
 
 void loop(){
   IMU.getAGT();
   float currentAccelZ = IMU.accZ();
-  // Serial.print("Current Reading: ");
-  // Serial.println(currentAccelZ);
 
  if (currentAccelZ > (maxAccelZ + motionThreshold) || 
       currentAccelZ < (minAccelZ - motionThreshold)) { 
     Serial.print("Motion detected, ");
-    Serial.print("Current Reading: ");
-    Serial.print(currentAccelZ, 6);
-    Serial.print(", Difference: ");
-    
-
-    //Debug
-    float difference;
-
-    if (currentAccelZ > (maxAccelZ + motionThreshold)) {
-        difference = currentAccelZ - (maxAccelZ + motionThreshold);
-    } else {
-        difference = (minAccelZ - motionThreshold) - currentAccelZ;
-    }
-    Serial.print(difference, 6);
-    Serial.print(", Counter: ");
-    Serial.println(detectionCounter);
-    detectionCounter++;
-
-
+    updateLedStatus(OPERATIONAL_PRESENCE);
+    delay(1000);
+    updateLedStatus(OPERATIONAL_NO_PRESENCE);
   }
-
   delay(sampleSpeedMs);
 }
 
-
 void initializeMotionRange() {
-  Serial.println("Calibrating");
-  Serial.println("Please stand back");
-  delay(5000); //Time to step back
-  Serial.println("-->");
-  digitalWrite(LED_BUILTIN, LOW);
+  updateLedStatus(CALIBRATING);
 
   IMU.getAGT();
 
@@ -95,11 +74,5 @@ void initializeMotionRange() {
     delay(1); 
     
   }
-  Serial.println("");
-  digitalWrite(LED_BUILTIN, HIGH);
-  Serial.print("MaxAccelZ:");
-  Serial.println(maxAccelZ, 6);
-  Serial.print("MinAccelZ:");
-  Serial.println(minAccelZ, 6);
-  delay(2500); // Time to read values
+updateLedStatus(SETUP);
 }
