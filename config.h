@@ -14,6 +14,10 @@ IMU related settings below
 ________________________________________________
 */
 #define IMU_CALIBRATION_TIME_IN_SECONDS 10
+#define MOTION_THRESHOLD_ 0.0005
+#define INACTIVITY_TIMEOUT_IN_MINUTES 45
+#define SAMPLE_SPEED_IN_MILLISECONDS 10
+
 
 /*
 MQTT related settings below
@@ -25,5 +29,7 @@ ________________________________________________
 #define MQTT_PASSWORD "password"
 
 extern int optOutButtonTimeoutInMinutes;
+extern unsigned long lastMotionDetectionTime;
+extern bool isDeskOccupied;
 
 #endif

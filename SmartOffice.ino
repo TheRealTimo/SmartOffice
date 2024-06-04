@@ -1,11 +1,5 @@
 #include "ICM42688.h"
 
-
-const float motionThreshold = 0.0005; //The threshold at which motion is detected
-
-const int initialisationTimeInSeconds = 10;
-const int sampleSpeedMs = 10;
-
 float maxAccelZ;
 float minAccelZ;
 
@@ -34,15 +28,27 @@ void loop(){
   if(optOutButtonPin == HIGH){
     startOptOutTimer();
   }
+  if (!mqttClient.connected()) {
+    connectMqtt();
+  }
+  mqttClient.loop();
+
+
   IMU.getAGT();
   float currentAccelZ = IMU.accZ();
-
- if (currentAccelZ > (maxAccelZ + motionThreshold) || 
-      currentAccelZ < (minAccelZ - motionThreshold)) { 
-    Serial.print("Motion detected, ");
-    updateLedStatus(OPERATIONAL_PRESENCE);
-    delay(1000);
-    updateLedStatus(OPERATIONAL_NO_PRESENCE);
+  if (currentAccelZ > (maximumAccelerationZAxiz + MOTION_THRESHOLD_) || currentAccelZ < (minimumAccelerationZAxiz - MOTION_THRESHOLD_)) {
+    lastMotionDetectionTime = millis();
+    if (!isDeskOccupied) {
+      isDeskOccupied = true;
+      updateLedStatus(OPERATIONAL_PRESENCE);
+      mqttClient.publish("smartOffice/plugs/cmnd/plug1/POWER", "1");
+    }
+  } else {
+    if (isDeskOccupied && (millis() - lastMotionDetectionTime) > (INACTIVITY_TIMEOUT_IN_MINUTES * 60 * 1000)) {
+      isDeskOccupied = false;
+      updateLedStatus(OPERATIONAL_NO_PRESENCE);
+      mqttClient.publish("smartOffice/plugs/cmnd/plug1/POWER", "0");
+    }
   }
-  delay(sampleSpeedMs);
+  delay(SAMPLE_SPEED_IN_MILLISECONDS);
 }
