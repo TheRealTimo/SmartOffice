@@ -3,9 +3,8 @@
 
 #include <stdint.h>
 #include "led.h"
-#include "config.h"
-#include "variables.h"
 #include "mqtt.h"
+#include "variables.h"
 
 extern const uint8_t optOutButtonPin;
 
