@@ -18,6 +18,8 @@ ________________________________________________
 #define INACTIVITY_TIMEOUT_IN_MINUTES 45
 #define SAMPLE_SPEED_IN_MILLISECONDS 10
 
+#define OPT_OUT_BUTTON_TIMEOUT_IN_MINUTES_DEFAULT_VALUE 240
+
 
 /*
 MQTT related settings below
@@ -27,9 +29,5 @@ ________________________________________________
 #define MQTT_PORT 1883
 #define MQTT_USERNAME "user"
 #define MQTT_PASSWORD "password"
-
-extern int optOutButtonTimeoutInMinutes;
-extern unsigned long lastMotionDetectionTime;
-extern bool isDeskOccupied;
 
 #endif

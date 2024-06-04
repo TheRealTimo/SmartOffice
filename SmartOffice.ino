@@ -8,6 +8,7 @@ float minAccelZ;
 #include "mqtt.h"
 #include "imu.h"
 #include "optout.h"
+#include "variables.h"
 
 void setup(void){
   pinMode(redLedPin, OUTPUT);
