@@ -13,6 +13,8 @@ ________________________________________________
 IMU related settings below
 ________________________________________________
 */
+#define IMU_CONNECTION_ATTEMPTS 10
+
 #define IMU_CALIBRATION_TIME_IN_SECONDS 10
 #define MOTION_THRESHOLD 0.0005
 #define INACTIVITY_TIMEOUT_IN_MINUTES 45
@@ -32,5 +34,7 @@ ________________________________________________
 #define MQTT_PORT 1883
 #define MQTT_USERNAME "user"
 #define MQTT_PASSWORD "password"
+
+#define MQTT_CONNECTION_TIMEOUT_IN_SECONDS 30
 
 #endif

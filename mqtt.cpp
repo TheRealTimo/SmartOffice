@@ -12,19 +12,24 @@ void setupMqtt() {
 void connectMqtt() {
   unsigned long startTime = millis();
   updateLedStatus(SETUP);
-  while (!mqttClient.connected()) {
-    isMqttSetup ? (void)0 : setupMqtt();
-    Serial.println("Attempting MQTT connection...");
-    String clientId = "ESP8266Client-";
-    clientId += String(random(0xffff), HEX);
-    if (mqttClient.connect(clientId.c_str(), MQTT_USERNAME, MQTT_PASSWORD)) {
-      Serial.println("Connected as " + String(clientId));
-    } else {
-      updateLedStatus(ERROR);
-      Serial.print("failed, rc=");
-      Serial.print(mqttClient.state());
-      Serial.println(" try again in 5 seconds");
-      delay(5000);
+  while (!mqttClient.connected() && millis() - startTime < MQTT_CONNECTION_TIMEOUT_IN_SECONDS * 1000) {
+    while (!mqttClient.connected()) {
+      isMqttSetup ? (void)0 : setupMqtt();
+      Serial.println("Attempting MQTT connection...");
+      String clientId = "ESP8266Client-";
+      clientId += String(random(0xffff), HEX);
+      if (mqttClient.connect(clientId.c_str(), MQTT_USERNAME, MQTT_PASSWORD)) {
+        Serial.println("Connected as " + String(clientId));
+      } else {
+        updateLedStatus(ERROR);
+        Serial.print("failed, rc=");
+        Serial.print(mqttClient.state());
+        Serial.println(" try again in 5 seconds");
+        delay(5000);
+      }
+    }
+    if (!mqttClient.connected()) {
+      ledBlinkError();
     }
   }
   if (!mqttClient.connected()) {

@@ -7,10 +7,24 @@ float maximumAccelerationZAxiz;
 
 void setupImu() {
   updateLedStatus(SETUP);
-  int status = IMU.begin();
+  int status;
+  for (uint8_t attempt = 0; attempt < IMU_CONNECTION_ATTEMPTS; attempt++) {
+    status = IMU.begin();
+    if (status >= 0) {
+      break;
+    }
 
+    Serial.println("IMU initialization unsuccessful");
+    Serial.println("Check IMU wiring or try cycling power");
+    Serial.print("Status: ");
+    Serial.println(status);
+    updateLedStatus(ERROR);
+    delay(500);
+  }
+
+  // Check final status after all attempts
   if (status < 0) {
-    Serial.println("IMU initialization failed.");
+    Serial.println("IMU initialization failed after all attempts.");
     ledBlinkError();
   } else {
     Serial.println("IMU initialization successful!");
