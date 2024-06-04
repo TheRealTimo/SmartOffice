@@ -20,5 +20,7 @@ void turnSmartSwitchOn(const bool& state);
 void mqttPublishWithRetry(const char* topic, const char* payload, const bool& retain = false);
 void publishOptOutValueToMqtt();
 void publishTelemetryToMqtt();
+void callback(char* topic, byte* payload, unsigned int length);
+void publishCommandValuesToMqtt();
 
 #endif
