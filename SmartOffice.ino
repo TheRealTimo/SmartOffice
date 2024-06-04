@@ -78,7 +78,6 @@ void loop() {
       isDeskOccupied = true;
       updateLedStatus(OPERATIONAL_PRESENCE);
       turnSmartSwitchOn(true);
-      publishOccupancyStatusToMqtt();
     }
 
     positiveReadingsCount = 0;
@@ -92,7 +91,6 @@ void loop() {
     isDeskOccupied = false;
     updateLedStatus(OPERATIONAL_NO_PRESENCE);
     turnSmartSwitchOn(false);
-    publishOccupancyStatusToMqtt();
   }
 
   delay(sampleSpeedInMilliseconds);

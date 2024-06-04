@@ -168,6 +168,7 @@ void subscriptionCallback(char* topic, byte* payload, unsigned int length) {
  */
 void turnSmartSwitchOn(const bool& state) {
   mqttPublishWithRetry((String(MQTT_SWITCH_CMND_TOPIC_PREFIX) + String(MQTT_SWITCH_TOPIC_SUFFIX) + "/POWER").c_str(), state ? "1" : "0");
+  publishOccupancyStatusToMqtt();
 }
 
 /*
