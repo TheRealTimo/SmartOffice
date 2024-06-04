@@ -41,6 +41,34 @@ void publishOccupancyStatusToMqtt() {
   mqttClient.publish((String(MQTT_ESP_STATUS_TOPIC) + String(MQTT_CONTROLLER_ID) + "/PRESENCE").c_str(), isDeskOccupied ? "OCCUPIED" : "UNOCCUPIED");
 }
 
+void publishTelemetryToMqtt() {
+  String telemetryJson = "{";
+  telemetryJson += "\"initialisationTimeInSeconds\":";
+  telemetryJson += IMU_CALIBRATION_TIME_IN_SECONDS;
+  telemetryJson += ",\"sensorConnectionAttempts\":";
+  telemetryJson += IMU_CONNECTION_ATTEMPTS;
+  telemetryJson += ",\"networkSsid\":\"";
+  telemetryJson += WIFI_SSID;
+  telemetryJson += "\"";
+  telemetryJson += ",\"wifiConnectionTimeoutInSeconds\":";
+  telemetryJson += WIFI_TIMEOUT_IN_SECONDS;
+  telemetryJson += ",\"mqttBrokerIp\":\"";
+  telemetryJson += MQTT_HOST;
+  telemetryJson += "\"";
+  telemetryJson += ",\"mqttBrokerPort\":";
+  telemetryJson += MQTT_PORT;
+  telemetryJson += ",\"mqttUsername\":\"";
+  telemetryJson += MQTT_USERNAME;
+  telemetryJson += "\"";
+  telemetryJson += "}";
+
+  mqttClient.publish((String(MQTT_ESP_TELE_TOPIC) + String(MQTT_CONTROLLER_ID) + "/INFO1").c_str(), telemetryJson.c_str(), true);
+}
+
+void publishOptOutValueToMqtt() {
+  mqttClient.publish((String(MQTT_ESP_CMND_TOPIC) + String(MQTT_CONTROLLER_ID) + "/OPTOUT").c_str(), isOptOutTimerRunning ? "TRUE" : "FALSE");
+}
+
 void turnSmartSwitchOn(const bool& state) {
   mqttPublishWithRetry((String(MQTT_SWITCH_CMND_TOPIC_PREFIX) + String(MQTT_SWITCH_TOPIC_SUFFIX) + "/POWER").c_str(), state ? "1" : "0");
 }

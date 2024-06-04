@@ -36,6 +36,8 @@ ________________________________________________
 #define MQTT_SWITCH_CMND_TOPIC_PREFIX "smartOffice/plugs/cmnd/"
 #define MQTT_SWITCH_TOPIC_SUFFIX "plug3"
 #define MQTT_ESP_STATUS_TOPIC "smartOffice/esps/stat/esp"
+#define MQTT_ESP_TELE_TOPIC "smartOffice/esps/tele/esp"
+#define MQTT_ESP_CMND_TOPIC "smartOffice/esps/cmnd/esp"
 
 
 #define MQTT_CONTROLLER_ID "3"
