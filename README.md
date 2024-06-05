@@ -69,7 +69,7 @@ The system relies on multiple configuration values all of which can be found in 
 
 ### Variance
 
-The version in [wip/Variance](https://github.com/TheRealTimo/SmartOffice/blob/wip/varianceDetection/) supports automatic recalibration through variance calculation
+The version in [wip/Variance](https://github.com/TheRealTimo/SmartOffice/tree/wip/varianceDetection) supports automatic recalibration through variance calculation
 
 | :warning: WARNING                                                                                                                                                                                                                                                   |
 | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
